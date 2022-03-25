@@ -201,11 +201,10 @@ class Net(object):
         self.Myimgaug = ImgAugTransform()
         self.uncertainty_batchnum = 10000
         self.uncertainty_counter = 0
-        self.toallabel = ["0fp","红底打印指纹","白底打印指纹","蓝底打印指纹","绿底打印指纹","黄底打印指纹","印泥","粉末"]
+        self.toallabel = ["0fp","红底打印指纹","白底打印指纹"]
 
     def load_data(self):
-        train_transform = transforms.Compose([#transforms.Resize((int(80*self.resizefactor),int(64*self.resizefactor))),
-                                              #transforms.RandomRotation(degrees=(-15,15),interpolation=Image.BILINEAR),#旋转少一点
+        train_transform = transforms.Compose([
                                               transforms.Grayscale(),
                                               transforms.RandomHorizontalFlip(p=0.5),
                                               transforms.RandomVerticalFlip(p=0.5),
@@ -213,9 +212,7 @@ class Net(object):
                                               ])
         test_transform = transforms.Compose([#transforms.Resize((int(80*self.resizefactor),int(64*self.resizefactor))),
                                              transforms.Grayscale(),
-                                             #transforms.CenterCrop(config.input_size),
-                                             #transforms.ToTensor(),#放在了Dataset里面
-                                             #transforms.Normalize(0.5584,0.0780)
+
                                              ])
 											 
         # train_set = torchvision.datasets.ImageFolder(self.traindir, train_transform)
@@ -328,11 +325,7 @@ class Net(object):
         return train_loss_ret, train_correct / total, train_loss_uncertainty_ret, confusionmap
 
     def resume(self):
-        #model_path=r'./Models/model__2022_02_21_07_25D-retrain/ckpt_103.pth'#2.5D假手指模型
-        #model_path=r'./Models/model__2021_12_17_07_kehu123finetune/ckpt_76.pth'#2D假手指模型
-        #model_path=r'./Models/model__2022_02_15_03_youhua20220215/ckpt_56.pth'#2D假手指模型
-        #model_path=r'./Models/model__2022_02_23_02_youhua20220215-addshi/ckpt_48.pth'#2D假手指模型
-        model_path=r'./Models/model__2022_02_23_11_youhua-shifen-hongdi/ckpt_23.pth'#2D假手指模型
+        model_path=r'./Models/model__2022_02_23_11_youhua-shifen-hongdi/ckpt_23.pth'
         #print('Resuming from checkpoint...\n model_path:%s'%model_path)
         log_print(self.log,'Resuming from checkpoint...\n model_path:%s'%model_path)
 		
@@ -385,9 +378,6 @@ class Net(object):
              				
         self.symbol.load_state_dict(dd,strict=True)
 		
-        #centre_resume = checkpoint['center']
-        #self.criterion_centreloss.centers.data = torch.tensor(centre_resume).cuda()#初始化centre中心的值
-        #加载模型方式二:调用load_state_dict方法完全复制
         '''
         self.symbol.load_state_dict(checkpoint['net'])   
         if checkpoint['centers']:#如果有保存centres就复制过来
