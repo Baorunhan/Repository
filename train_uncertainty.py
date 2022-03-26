@@ -3,8 +3,6 @@ pytorch官方文档:https://pytorch.org/docs/stable/index.html
 '''
 #from msilib import sequence
 from ast import Not
-from gettext import find
-from select import select
 from cv2 import split
 import torch
 import torch.nn as nn
@@ -13,8 +11,7 @@ import torch.optim as optim
 import torch.utils.data
 import torch.backends.cudnn as cudnn
 import torch.utils.data as tud
-#import nni
-from torch.autograd  import  Function
+from torch.autograd import  Function
 import warnings
 warnings.filterwarnings("ignore")
 import torchvision
@@ -27,15 +24,14 @@ import numpy as np
 import argparse
 from torch.autograd import Variable
 #导入网络模型
-from net0809 import ASP0809
-from mobilenetv3 import MNV3_large2, MNV3_large2_uncertainty,MNV3_large2_v2,MNV3_large2_v3, Enablecertainlayer_fortrain, Uncertainty_block
+from mobilenetv3 import MNV3_large2_uncertainty, Enablecertainlayer_fortrain
 import datetime 
 import re
 import random,string
 import cv2
 import PIL.Image as Image
 import MylossF
-from itertools import cycle
+from itertools import cycle#读取两个长度不一的数据集
 from shutil import copyfile
 import PIL
 args = None
@@ -135,28 +131,6 @@ class Dataset(torchvision.datasets.ImageFolder):
         else:
             return sample, target
 
-os.environ["CUDA_VISIBLE_DEVICES"] = "0,1,2"
-def parse_args():
-    parser = argparse.ArgumentParser(description="ASP Train Network")
-    parser.add_argument('-l','--lr', default=0.01, type=float, help='start learning rate')
-    parser.add_argument('-b','--batch_size', default=256, type=int, help='')
-    parser.add_argument('-t','--traindir', default="", help='train dir')
-    parser.add_argument('-t1','--traindir0fp', default="", help='train dir')
-    parser.add_argument('-t2','--traindirspoof', default="", help='train dir')
-    parser.add_argument('-v','--validdir', default="", help='valid dir')
-    parser.add_argument('-r','--resume', default="",type=bool, help='resume from checkpoint')
-    parser.add_argument('-f','--flag', default="", help='specific version')
-    parser.add_argument('-p','--paraflag', default=0,type=int, help='specific version')
-
-    #args = parser.parse_args()
-    args = parser.parse_args([#'-t','../dataset/S92162/Spoofdata-newraw-newpre/2Dfake/train/',
-                              '-t1','../dataset/S92162/Spoofdata-newraw-newpre/2Dfake/train/0fp',
-                              '-t2','../dataset/S92162/Spoofdata-newraw-newpre/2Dfake/train/2_25D',
-                              '-v','../dataset/S92162/Spoofdata-newraw-newpre/2Dfake/test/',
-                              '-f','uncertainty',
-                              '-l', '0.0001','-p','1','-r','1'])
-    return args
-
 def get_lr(optimizer):
     for param_group in optimizer.param_groups:
         return param_group['lr']
@@ -208,7 +182,7 @@ class Net(object):
                                               transforms.Grayscale(),
                                               transforms.RandomHorizontalFlip(p=0.5),
                                               transforms.RandomVerticalFlip(p=0.5),
-											  transforms.ColorJitter(contrast=(0.8, 1.2)),#retry0,retry1对比度变化，还是先加上
+                                              transforms.ColorJitter(contrast=(0.8, 1.2)),#retry0,retry1对比度变化，还是先加上
                                               ])
         test_transform = transforms.Compose([#transforms.Resize((int(80*self.resizefactor),int(64*self.resizefactor))),
                                              transforms.Grayscale(),
@@ -548,7 +522,30 @@ class Net(object):
             if self.uncertainty_counter >= self.uncertainty_batchnum:
                 print('Uncertainty Training over!')
                 break
+                
+                
+os.environ["CUDA_VISIBLE_DEVICES"] = "0,1,2"
+def parse_args():
+    parser = argparse.ArgumentParser(description="ASP Train Network")
+    parser.add_argument('-l','--lr', default=0.01, type=float, help='start learning rate')
+    parser.add_argument('-b','--batch_size', default=256, type=int, help='')
+    parser.add_argument('-t','--traindir', default="", help='train dir')
+    parser.add_argument('-t1','--traindir0fp', default="", help='train dir')
+    parser.add_argument('-t2','--traindirspoof', default="", help='train dir')
+    parser.add_argument('-v','--validdir', default="", help='valid dir')
+    parser.add_argument('-r','--resume', default="",type=bool, help='resume from checkpoint')
+    parser.add_argument('-f','--flag', default="", help='specific version')
+    parser.add_argument('-p','--paraflag', default=0,type=int, help='specific version')
 
+    #args = parser.parse_args()
+    args = parser.parse_args([#'-t','../dataset/S92162/Spoofdata-newraw-newpre/2Dfake/train/',
+                              '-t1','../dataset/S92162/Spoofdata-newraw-newpre/2Dfake/train/0fp',
+                              '-t2','../dataset/S92162/Spoofdata-newraw-newpre/2Dfake/train/2_25D',
+                              '-v','../dataset/S92162/Spoofdata-newraw-newpre/2Dfake/test/',
+                              '-f','uncertainty',
+                              '-l', '0.0001','-p','1','-r','1'])
+    return args
+    
 def main():
     global model_path
 
