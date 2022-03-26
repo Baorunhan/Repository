@@ -6,3 +6,5 @@ train_uncertainty : train the uncertainty module attached to a small mobilenet m
 
 confusiontest_mn_uncertainty: get the confusion matrix and the uncertainty for each sample, which are saved in a matfile
 and a csv file.
+
+The style of the coding must be rectified.
