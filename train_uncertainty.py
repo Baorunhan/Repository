@@ -1,5 +1,5 @@
 '''
-pytorch官方文档:https://pytorch.org/docs/stable/index.html
+pytorch:https://pytorch.org/docs/stable/index.html
 '''
 #from msilib import sequence
 from ast import Not
@@ -26,7 +26,6 @@ from torch.autograd import Variable
 #导入网络模型
 from mobilenetv3 import MNV3_large2_uncertainty, Enablecertainlayer_fortrain
 import datetime 
-import re
 import random,string
 import cv2
 import PIL.Image as Image
