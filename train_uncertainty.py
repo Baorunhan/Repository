@@ -84,7 +84,7 @@ class Dataset(torchvision.datasets.ImageFolder):
         if self.randomselect:
             Toalindex = range(len(splits_clean["images"]))
             perm = random.sample(Toalindex,self.selectnum)
-            for obj in ["images", "label"]:
+            for obj in ["images", "label", "id"]:
                 splits_clean[obj] = np.array(splits_clean[obj])[perm].tolist()
 
         self.crawl_folders(splits_clean)#分数和标签成对处理
